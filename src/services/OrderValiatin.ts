@@ -1,5 +1,6 @@
-import { IOrder } from "../types/types";
+import { IDelivery, IOrder } from "../types/types";
 import { Pool } from "pg";
+import validator from 'validator'
 export default async function isOrderAvaliale(order : IOrder , db : Pool) {
     try {
         //verificar se o valor totalPago é coerente
@@ -27,5 +28,22 @@ export default async function isOrderAvaliale(order : IOrder , db : Pool) {
         }
     } catch (error) {
         
+    }
+}
+
+
+export  async function isOrderUser(user : IDelivery , db : Pool) {
+    try {
+        //verificar se o usuario da entrega existe
+        
+        const { rowCount } = await db.query("SELECT id  FROM users WHERE email = $1 and id = $2 LIMIT 1;"[user.email, user.id]);
+        if (rowCount == 0) {
+                return false
+        } else {
+            return true
+        }
+        
+    } catch (error) {
+        return false
     }
 }

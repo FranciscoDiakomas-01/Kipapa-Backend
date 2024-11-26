@@ -25,7 +25,6 @@ async function StartServer() {
     } catch (error) {
         await CreateDefaultAdmin(db);
     }
-    
     //glogal middleware
     server.use(cors());
     server.use(express.json());

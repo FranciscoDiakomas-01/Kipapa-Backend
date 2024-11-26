@@ -44,13 +44,14 @@ export interface IProduct {
 }
 
 export interface IOrder {
-  delivery?: IDelivery;
+ 
   order_detais: IOrderDetails;
   status: number;
   adress: IAdress;
   orders_food: IFoodOrder[];
   clientId: number 
 }
+
 
 export interface IFoodOrder {
   name: string,
@@ -61,6 +62,7 @@ export interface IFoodOrder {
 export interface IDelivery {
   name: string;
   email: string;
+  id : number
 }
 export interface IOrderDetails {
   totalPoduct: number;
