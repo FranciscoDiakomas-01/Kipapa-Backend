@@ -12,7 +12,7 @@ export async function getAllCategoryProduct(req: Request, res: Response) {
     const limit = Number(req.query.limit) || 10
     const offset: number = (page - 1) * limit;
     const { rowCount } = await db.query('SELECT id from productcategory')
-    const latPage = Math.floor(Number(rowCount) / limit)
+    const latPage = Math.ceil(Number(rowCount) / limit);
     if (id) {
         db.query(
           "SELECT id , title , description, to_char(created_at , 'DD/MM/YYYY') as created_at , to_char(updated_at , 'DD/MM/YYYY') as updated_at , img_url FROM productcategory WHERE id = $1;",
@@ -32,9 +32,8 @@ export async function getAllCategoryProduct(req: Request, res: Response) {
               async (err, result) => {
                 res.status(200).json({
                   data: result?.rows,
-                  total: result.rowCount,
+                  total: rowCount,
                   page,
-                  limit,
                   latPage,
                 });
                 return await db.end();
@@ -57,7 +56,7 @@ export async function CreateCategoryFood(req: Request, res: Response) {
       image_url: String(process.env.SERVER_PATH + req.file?.filename),
     };
 if (CategoryFood.title?.length >= 5 && CategoryFood.title?.length < 20) {
-    db.query("INSERT INTO productcategory(title , decription , img_url) VALUES ($1 , $2 , $3)",[CategoryFood.title, CategoryFood.decription , CategoryFood.image_url],async (err, result) => {
+    db.query("INSERT INTO productcategory(title , description , img_url) VALUES ($1 , $2 , $3)",[CategoryFood.title, CategoryFood.decription , CategoryFood.image_url],async (err, result) => {
         if (err) {
             res.status(400).json({
                 error: "alreary exist",
@@ -86,10 +85,10 @@ export async function UpdateCategoryFoodBody(req: Request, res: Response) {
     decription: req.body.desription,
   };
   if (FoodCategory.title?.length >= 5 && FoodCategory.title?.length < 20) {
-    await db.query("UPDATE productcategory SET decription = $1 ,title = $2 , updated_at = now() WHERE id = $3", [FoodCategory.decription, FoodCategory.title, id], (err, result) => {
+    await db.query("UPDATE productcategory SET description = $1 ,title = $2 , updated_at = now() WHERE id = $3", [FoodCategory.decription, FoodCategory.title, id], (err, result) => {
       if (err) {
         res.status(400).json({
-        error : 'already exists'
+        error : 'already exists' + err.message
         })
         return db.end()
     }

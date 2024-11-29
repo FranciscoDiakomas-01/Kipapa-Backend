@@ -7,6 +7,39 @@ import { isProduct, isProductToUpdate } from "../services/productValidation";
 import { IProduct } from "../types/types";
 import deleteUpLoadedFile from "../services/deleteUploadedFile";
 
+
+export async function getProductByCategory(req: Request, res: Response) {
+  const db = await ConnectionDB();
+  const id = Number(req.params?.id);
+  const page = Number(req.query.page) || 1;
+  const limit = Number(req.query.limit) || 10;
+  const offset: number = (page - 1) * limit;
+  if (id) {
+    
+  const { rowCount } = await db.query("SELECT id from product WHERE category_id = $1 ", [id]);
+  const latPage = Math.ceil(Number(rowCount) / limit);
+    db.query(
+      "SELECT product.id , product.name , product.description , product.current_price , product.old_price , to_char(product.created_at , 'DD/MM/YYYY') as created_at , to_char(product.updated_at , 'DD/MM/YYYY') as updated_at , product.img_url , productCategory.title FROM product JOIN productCategory ON product.category_id = productCategory.id WHERE  product.category_id = productCategory.id and product.category_id = $1 LIMIT $2 OFFSET $3;",
+      [id , limit, offset],
+      async (err, result) => {
+        res.status(200).json({
+          data: result?.rows,
+          err: err?.message,
+          page,
+          limit,
+          latPage,
+          total: rowCount,
+        });
+        return await db.end();
+      }
+    );
+    return;
+  } else {
+    res.status(400).json({
+      error :'invalid categoryId'
+    })
+  }
+}
 export async function getProduct(req: Request, res: Response) {
 
     const db = await ConnectionDB();
@@ -14,8 +47,8 @@ export async function getProduct(req: Request, res: Response) {
     const page = Number(req.query.page) || 1
     const limit = Number(req.query.limit) || 10
     const offset: number = (page - 1) * limit;
-    const { rowCount } = await db.query('SELECT id from productcategory')
-    const latPage = Math.floor(Number(rowCount) / limit)
+    const { rowCount } = await db.query("SELECT id from product");
+    const latPage = Math.ceil(Number(rowCount) / limit)
     if (id) {
         db.query(
           "SELECT product.id , product.name , product.description , product.current_price , product.old_price , to_char(product.created_at , 'DD/MM/YYYY') as created_at , to_char(product.updated_at , 'DD/MM/YYYY') as updated_at , product.img_url , productCategory.title FROM product JOIN productCategory ON product.category_id = productCategory.id WHERE  product.category_id = productCategory.id and product.id = $1 LIMIT 1;",
