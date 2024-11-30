@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS employeds(
     name varchar(30) not null,
     lastname varchar(30) not null,
     email varchar(30) not null unique,
-    isOpen boolean default true,
+    isOpen int default 1,
     password text not null,
     adress jsonb,
     category_id int not null references categoryEmployed(id) on delete cascade,

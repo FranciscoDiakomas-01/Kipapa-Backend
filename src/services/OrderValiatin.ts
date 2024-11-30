@@ -1,7 +1,6 @@
 import { IDelivery, IOrder } from "../types/types";
-import { Client } from "pg";
-import validator from 'validator'
-export default async function isOrderAvaliale(order : IOrder , db : Client) {
+import {  Pool } from "pg";
+export default async function isOrderAvaliale(order : IOrder , db : Pool) {
     try {
         //verificar se o valor totalPago é coerente
         let totalPay = 0
@@ -32,7 +31,7 @@ export default async function isOrderAvaliale(order : IOrder , db : Client) {
 }
 
 
-export  async function isOrderUser(user : IDelivery , db : Client) {
+export  async function isOrderUser(user : IDelivery , db : Pool) {
     try {
         //verificar se o usuario da entrega existe
         

@@ -1,7 +1,7 @@
 import { IProduct } from "../types/types";
-import { Client } from "pg";
+import { Pool } from "pg";
 
-export async function isProduct(product : IProduct , db : Client) {
+export async function isProduct(product : IProduct , db : Pool) {
     
     //validar os dados de um produto
     const { rowCount } = await db.query("SELECT id from productCategory WHERE id = $1 LIMIT 1;", [product?.category_id]);
@@ -18,7 +18,7 @@ export async function isProduct(product : IProduct , db : Client) {
     }
 }
 
-export async function isProductToUpdate(product : Omit<IProduct , 'img_url'> , db : Client) {
+export async function isProductToUpdate(product : Omit<IProduct , 'img_url'> , db : Pool) {
     
     //validar os dados de um produto a ser actualizado
     try {

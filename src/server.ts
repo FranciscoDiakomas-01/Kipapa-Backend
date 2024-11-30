@@ -18,7 +18,7 @@ dotenv.config()
 async function StartServer() {
     const server: Application = express();
     const port = process.env.PORT;
-    const db = await ConnectionDb()
+    const db = ConnectionDb;
     await RunnMigrations(db)
     try {
         await CreateDefaultAdmin(db);

@@ -3,13 +3,12 @@ import { Request, Response } from "express";
 import validator from 'validator'
 import ConnectionDB from "../database/dbConnection";
 import CryptoJS from "crypto-js";
-
+const db = ConnectionDB;
 export async function AdminLogin(req : Request , res : Response) {
     
     try {
         if (validator.isEmail(req.body?.email) && req.body?.password?.length >= 8) {
             
-            const db = await ConnectionDB()
             db.query('SELECT email , password , id from delivery WHERE id = 1 LIMIT 1;', (err, result) => {
                 if (err) {
                     console.log(err)
@@ -27,12 +26,12 @@ export async function AdminLogin(req : Request , res : Response) {
                             token: token,
                             login : 'sucess'
                         })
-                        return db.end()
+                        return 
                     } else {
                         res.status(401).json({
                             error : 'your not admin'
                         })
-                        return db.end()
+                        return 
                     }
                 }
             })

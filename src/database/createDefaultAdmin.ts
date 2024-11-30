@@ -2,8 +2,8 @@ import CryptoJS from "crypto-js";
 import dotenv from "dotenv";
 import {IUser} from "../types/types";
 dotenv.config();
-import { Client } from "pg";
-export default async function CreateDefaultAdmin(db: Client) {
+import { Pool } from "pg";
+export default async function CreateDefaultAdmin(db: Pool) {
   const Admin  = {
     adress: {
       city: "Luanda",

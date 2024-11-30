@@ -6,10 +6,10 @@ dotenv.config()
 import { isProduct, isProductToUpdate } from "../services/productValidation";
 import { IProduct } from "../types/types";
 import deleteUpLoadedFile from "../services/deleteUploadedFile";
-
+const db = ConnectionDB;
 
 export async function getProductByCategory(req: Request, res: Response) {
-  const db = await ConnectionDB();
+  
   const id = Number(req.params?.id);
   const page = Number(req.query.page) || 1;
   const limit = Number(req.query.limit) || 10;
@@ -30,7 +30,7 @@ export async function getProductByCategory(req: Request, res: Response) {
           latPage,
           total: rowCount,
         });
-        return await db.end();
+        return 
       }
     );
     return;
@@ -42,7 +42,7 @@ export async function getProductByCategory(req: Request, res: Response) {
 }
 export async function getProduct(req: Request, res: Response) {
 
-    const db = await ConnectionDB();
+    
     const id = Number(req.query.id);
     const page = Number(req.query.page) || 1
     const limit = Number(req.query.limit) || 10
@@ -51,13 +51,17 @@ export async function getProduct(req: Request, res: Response) {
     const latPage = Math.ceil(Number(rowCount) / limit)
     if (id) {
         db.query(
-          "SELECT product.id , product.name , product.description , product.current_price , product.old_price , to_char(product.created_at , 'DD/MM/YYYY') as created_at , to_char(product.updated_at , 'DD/MM/YYYY') as updated_at , product.img_url , productCategory.title FROM product JOIN productCategory ON product.category_id = productCategory.id WHERE  product.category_id = productCategory.id and product.id = $1 LIMIT 1;",
+          "SELECT product.id , product.name , product.description , product.current_price , product.old_price , to_char(product.created_at , 'DD/MM/YYYY') as created_at , to_char(product.updated_at , 'DD/MM/YYYY') as updated_at , product.img_url , productCategory.title , productCategory.id as categoryId FROM product JOIN productCategory ON product.category_id = productCategory.id WHERE  product.category_id = productCategory.id and product.id = $1 LIMIT 1;",
           [id],
           async (err, result) => {
+            if (err) {
+              console.log(err.message);
+              return;
+            }
             res.status(200).json({
               data: result.rowCount != 0 ? result.rows : "not found",
             });
-            return await db.end();
+            return 
           }
         );
         return;
@@ -74,7 +78,7 @@ export async function getProduct(req: Request, res: Response) {
                   latPage,
                   total: rowCount,
                 });
-                return await db.end();
+                return 
               }
             );
     }
@@ -87,7 +91,7 @@ export async function CreateProduct(req: Request, res: Response) {
         })
         return
     }
-    const db = await ConnectionDB();
+    
     const Food: IProduct = {
         category_id: Number(req.body.categoryId),
         current_price: Number(req.body.price),
@@ -113,12 +117,12 @@ export async function CreateProduct(req: Request, res: Response) {
                     res.status(400).json({
                     error : 'already exists'
                     })
-                    return db.end()
+                    return 
                 } else {
                     res.status(201).json({
                         data : 'created',
                     });
-                    return db.end();
+                    return ;
             }
         })
     }
@@ -127,7 +131,7 @@ export async function CreateProduct(req: Request, res: Response) {
 
 export async function UpdateProductBody(req: Request, res: Response) {
   const id = Number(req.params.id);
-  const db = await ConnectionDB();
+  
   const Food: Omit<IProduct, "img_url"> = {
     category_id: Number(req.body.categoryId),
     current_price: Number(req.body.price),
@@ -147,19 +151,19 @@ export async function UpdateProductBody(req: Request, res: Response) {
                     data: result.rowCount != 0 ? "updated" : "not found",
                 });
             }
-            return db.end();
+            return ;
         });
     } else {
         res.status(400).json({
             error: "invalid body",
         });
-        return db.end();
+        return ;
     }
 }
 
 export async function UpdateProductFile(req: Request, res: Response) {
     const id = Number(req.params.id);
-  const db = await ConnectionDB();
+  
   if (req.file) {
     const { rows } = await db.query("SELECT img_url FROM product WHERE id = $1 LIMIT 1;", [id]);
     const fileTodelete = String(rows[0]?.img_url);
@@ -171,13 +175,13 @@ export async function UpdateProductFile(req: Request, res: Response) {
       res.status(200).json({
         data: "updated"
       });
-      return db.end()
+      return 
     } else {
       fs.unlinkSync(req.file.path)
       res.status(404).json({
         data: "not found",
       });
-      return db.end();
+      return ;
     }
   } else {
     res.status(400).json({
@@ -189,7 +193,7 @@ export async function UpdateProductFile(req: Request, res: Response) {
 
 export async function DeleteProduct(req: Request, res: Response) {
   const id = Number(req.params.id);
-  const db = await ConnectionDB();
+  
   if (!isNaN(id)) {
     //pegar o caminho do arquivo para eliminar
     const { rows } = await db.query("SELECT img_url FROM product WHERE id = $1 LIMIT 1;", [id]);
@@ -198,13 +202,13 @@ export async function DeleteProduct(req: Request, res: Response) {
         res.status(201).json({
           data: result.rowCount != 0 ? "deleted" : "not found",
         });
-        return await db.end();
+        return 
       }
     );
   } else {
     res.status(400).json({
       error: "inavlid id",
     });
-    return await db.end();
+    return 
   }
 }

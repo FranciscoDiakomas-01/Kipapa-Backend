@@ -2,9 +2,10 @@ import { Response, Request } from "express";
 import ConnectionDB from "../database/dbConnection";
 import dotenv from "dotenv";
 dotenv.config();
+const db = ConnectionDB;
 
 export async function getPayForms(req: Request, res: Response) {
-  const db = await ConnectionDB();
+  
   const id = Number(req.query.id);
   if (id) {
     db.query(
@@ -14,7 +15,7 @@ export async function getPayForms(req: Request, res: Response) {
         res.status(200).json({
           data: result.rows,
         });
-        return await db.end();
+        return ;
       }
     );
     return;
@@ -26,7 +27,7 @@ export async function getPayForms(req: Request, res: Response) {
         data: result.rows,
         total: result.rowCount,
       });
-      return await db.end();
+      return ;
     }
   );
 }
@@ -39,7 +40,7 @@ export async function CreatePayForm(req: Request, res: Response) {
     });
     return;
   }
-  const db = await ConnectionDB();
+  
   db.query(
     "INSERT INTO payforms(title) VALUES($1)",
     [title?.toUpperCase()],
@@ -48,12 +49,12 @@ export async function CreatePayForm(req: Request, res: Response) {
         res.status(400).json({
           error: "alreary exist",
         });
-        return await db.end();
+        return ;
       } else {
         res.status(201).json({
           data: "created",
         });
-        return await db.end();
+        return ;
       }
     }
   );
@@ -68,7 +69,7 @@ export async function UpdatePayForm(req: Request, res: Response) {
     });
     return;
   }
-  const db = await ConnectionDB();
+  
   db.query(
     "UPDATE payforms SET title = $1 , updated_at = now() WHERE id =$2",
     [title?.toUpperCase(), id],
@@ -77,19 +78,19 @@ export async function UpdatePayForm(req: Request, res: Response) {
         res.status(400).json({
           error: "alreary exist",
         });
-        return await db.end();
+        return ;
       } else {
         res.status(201).json({
           data: "updated",
         });
-        return await db.end();
+        return ;
       }
     }
   );
 }
 export async function DeletePayForm(req: Request, res: Response) {
   const id = Number(req.params.id);
-  const db = await ConnectionDB();
+  
   if (!isNaN(id)) {
     db.query(
       "DELETE FROM payforms WHERE id = $1;",
@@ -98,13 +99,13 @@ export async function DeletePayForm(req: Request, res: Response) {
         res.status(201).json({
           data: result.rowCount != 0 ? "deleted" : "not found",
         });
-        return await db.end();
+        return ;
       }
     );
   } else {
     res.status(400).json({
       error: "inavlid id",
     });
-    return await db.end();
+    return ;
   }
 }

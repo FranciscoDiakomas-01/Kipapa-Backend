@@ -5,16 +5,17 @@ import ConnectionDB from "../database/dbConnection";
 import { IUser } from "../types/types";
 import isUser, { isClient } from "../services/UserValidation";
 dotenv.config();
+const db = ConnectionDB;
 
 export async function getAllClient(req: Request, res: Response) {
-  const db = await ConnectionDB();
+  
   const page: number = Number(req.query.page) || 1;
   const limit: number = Number(req.query.limit) || 10;
   const offset: number = (page - 1) * limit;
   const { rows } = await db.query("SELECT count(*) as total FROM clients;");
-  const laspage = Math.floor(Number(rows[0]?.total) / limit);
+  const laspage = Math.ceil(Number(rows[0]?.total) / limit);
   db.query(
-    "SELECT clients.id , concat(clients.name , ' ' , clients.lastname) as fullname, clients.email , to_char(clients.created_at , 'DD/MM/YYYY') as created_at,to_char(clients.updated_at , 'DD/MM/YYYY') as updated_at , clients.adress FROM clients ORDER BY clients.id DESC LIMIT $1 OFFSET $2 ",
+    "SELECT clients.id , clients.name , clients.lastname, clients.email , to_char(clients.created_at , 'DD/MM/YYYY') as created_at,to_char(clients.updated_at , 'DD/MM/YYYY') as updated_at , clients.adress FROM clients ORDER BY clients.id DESC LIMIT $1 OFFSET $2 ",
     [limit, offset],
     (err, result) => {
       if (err) {
@@ -35,7 +36,7 @@ export async function getAllClient(req: Request, res: Response) {
 export async function getClientyId(req: Request, res: Response) {
   const id = !isNaN(Number(req.params.id)) ? req.params.id : false;
   if (id) {
-    const db = await ConnectionDB();
+    const db = ConnectionDB;
     return db.query(
       "SELECT clients.id , concat(clients.name , ' ' , clients.lastname) as fullname, clients.email , to_char(clients.created_at , 'DD/MM/YYYY') as created_at,to_char(clients.updated_at , 'DD/MM/YYYY') as updated_at , clients.adress FROM clients WHERE id = $1 LIMIT 1;",
       [id],
@@ -76,12 +77,11 @@ export async function createClient(req: Request, res: Response) {
     return;
   }
   if (isClient(client)) {
-    const db = await ConnectionDB();
+    const db = ConnectionDB;
     await db.query(
       "INSERT INTO clients(name , lastname , email , password , adress ) VALUES($1 , $2 , $3 , $4 , $5) RETURNING id;",
       [client.name, client.lastname, client.email, client.password , JSON.stringify(client.adress)],
       async (err, result) => {
-        db.end();
         if (err) {
           res.status(400).json({
             error: "email already exist",
@@ -110,13 +110,14 @@ export async function deleteCient(req: Request, res: Response) {
     });
     return;
   } else {
-    const db = await ConnectionDB();
+    const db = ConnectionDB;
     const { rowCount } = await db.query("DELETE FROM clients WHERE id = $1", [
       id,
     ]);
     res.status(200).json({
       msg: rowCount == 1 ? "deleted" : "not found",
     });
+    return
   }
 }
 
@@ -143,7 +144,7 @@ export async function updateClient(req: Request, res: Response) {
     });
     return;
   } else {
-    const db = await ConnectionDB();
+    const db = ConnectionDB;
     //comparar as palavras senhas
     try {
       const { rows, rowCount } = await db.query(
@@ -154,7 +155,7 @@ export async function updateClient(req: Request, res: Response) {
         res.status(400).json({
           error: "client not found",
         });
-        return await db.end();
+        return
       }
       const oldPassword = CryptoJS.AES.decrypt(rows[0]?.password,String(process.env.ENC_PASS)).toString(CryptoJS.enc.Utf8);
       const newPassWord = CryptoJS.AES.encrypt(password.newPassWord,String(process.env.ENC_PASS)).toString();
@@ -177,18 +178,18 @@ export async function updateClient(req: Request, res: Response) {
           res.status(200).json({
             msg: "updated",
           });
-          return await db.end();
+          return
         } else {
           res.status(400).json({
             msg: "invalid client",
           });
-          return await db.end();
+          return
         }
       } else {
         res.status(400).json({
           msg: "password doesn´t matches!",
         });
-        return await db.end();
+        return
       }
     } catch (error) {}
   }
