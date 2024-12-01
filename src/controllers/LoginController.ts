@@ -47,3 +47,54 @@ export async function AdminLogin(req : Request , res : Response) {
         })
     }
 }
+
+
+export async function ClientLogin(req: Request, res: Response) {
+  try {
+    if (validator.isEmail(req.body?.email) && req.body?.password?.length >= 8) {
+      db.query(
+        "SELECT email , password , id from clients WHERE email = $1 LIMIT 1;", [req.body.email],
+        (err, result) => {
+          if (err) {
+            console.log(err);
+            return;
+          } else {
+              if (result.rowCount == 0) {
+                  res.status(404).json({
+                      msg : 'client not found'
+                  })
+                  return
+              }
+            const decryptedPass = CryptoJS.AES.decrypt(result.rows[0]?.password,String(process.env.ENC_PASS)).toString(CryptoJS.enc.Utf8);
+            if (req.body?.email == result.rows[0]?.email && req.body?.password == decryptedPass) {
+              const payload = {
+                id: result.rows[0]?.id,
+              };
+              const token = generateToken(payload);
+              res.status(200).json({
+                token: token,
+                login: "sucess",
+                id : payload.id
+              });
+              return;
+            } else {
+              res.status(401).json({
+                error: "your not admin",
+              });
+              return;
+            }
+          }
+        }
+      );
+    } else {
+      res.status(400).json({
+        error: "invalid email or password",
+      });
+      return;
+    }
+  } catch (error) {
+    res.status(400).json({
+      error: "invalid body",
+    });
+  }
+}

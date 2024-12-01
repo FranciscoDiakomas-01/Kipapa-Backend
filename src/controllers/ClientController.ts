@@ -36,9 +36,8 @@ export async function getAllClient(req: Request, res: Response) {
 export async function getClientyId(req: Request, res: Response) {
   const id = !isNaN(Number(req.params.id)) ? req.params.id : false;
   if (id) {
-    const db = ConnectionDB;
     return db.query(
-      "SELECT clients.id , concat(clients.name , ' ' , clients.lastname) as fullname, clients.email , to_char(clients.created_at , 'DD/MM/YYYY') as created_at,to_char(clients.updated_at , 'DD/MM/YYYY') as updated_at , clients.adress FROM clients WHERE id = $1 LIMIT 1;",
+      "SELECT clients.id , clients.name ,   clients.lastname, clients.email , to_char(clients.created_at , 'DD/MM/YYYY') as created_at,to_char(clients.updated_at , 'DD/MM/YYYY') as updated_at , clients.adress FROM clients WHERE id = $1 LIMIT 1;",
       [id],
       (err, result) => {
         res.status(200).json({
@@ -59,15 +58,15 @@ export async function createClient(req: Request, res: Response) {
   const client: Omit<IUser, "categoryId"> = {
     email: req.body?.email,
     name: req.body?.name,
-    lastname: req.body?.lastname,
+    lastname: "",
     password: CryptoJS.AES.encrypt(
       req.body.password,
       String(process.env.ENC_PASS)
     ).toString(),
     adress: {
-      city: req.body?.city,
-      cep: req.body?.cep,
-      qoute: req.body?.qoute,
+      city: "",
+      cep: 0,
+      qoute: "",
     },
   };
   if (req?.body.password?.length < 8) {
@@ -76,10 +75,7 @@ export async function createClient(req: Request, res: Response) {
     });
     return;
   }
-  if (isClient(client)) {
-    const db = ConnectionDB;
-    await db.query(
-      "INSERT INTO clients(name , lastname , email , password , adress ) VALUES($1 , $2 , $3 , $4 , $5) RETURNING id;",
+  db.query("INSERT INTO clients(name , lastname , email , password , adress ) VALUES($1 , $2 , $3 , $4 , $5) RETURNING id;",
       [client.name, client.lastname, client.email, client.password , JSON.stringify(client.adress)],
       async (err, result) => {
         if (err) {
@@ -95,11 +91,7 @@ export async function createClient(req: Request, res: Response) {
         }
       }
     );
-  } else {
-    res.status(400).json({
-      error: "invalid client",
-    });
-  }
+  
 }
 
 export async function deleteCient(req: Request, res: Response) {
@@ -110,7 +102,6 @@ export async function deleteCient(req: Request, res: Response) {
     });
     return;
   } else {
-    const db = ConnectionDB;
     const { rowCount } = await db.query("DELETE FROM clients WHERE id = $1", [
       id,
     ]);
@@ -129,7 +120,7 @@ export async function updateClient(req: Request, res: Response) {
   }
 
   const password: IPassWord = {
-    newPassWord: req.body.newPassWord,
+    newPassWord: req.body.password,
     olPassWord: req.body.olPassWord,
   };
   if (password.newPassWord?.length < 8 || password.olPassWord?.length < 8) {
@@ -144,7 +135,6 @@ export async function updateClient(req: Request, res: Response) {
     });
     return;
   } else {
-    const db = ConnectionDB;
     //comparar as palavras senhas
     try {
       const { rows, rowCount } = await db.query(
@@ -157,8 +147,8 @@ export async function updateClient(req: Request, res: Response) {
         });
         return
       }
-      const oldPassword = CryptoJS.AES.decrypt(rows[0]?.password,String(process.env.ENC_PASS)).toString(CryptoJS.enc.Utf8);
-      const newPassWord = CryptoJS.AES.encrypt(password.newPassWord,String(process.env.ENC_PASS)).toString();
+      const oldPassword = CryptoJS.AES.decrypt(rows[0]?.password, String(process.env.ENC_PASS)).toString(CryptoJS.enc.Utf8);
+      const newPassWord = CryptoJS.AES.encrypt(password.newPassWord, String(process.env.ENC_PASS)).toString();
       if (oldPassword == password.olPassWord) {
         const client: Omit<IUser, "categoryId"> = {
           email: req.body?.email,

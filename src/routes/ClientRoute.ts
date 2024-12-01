@@ -4,9 +4,9 @@ import { isAdminToken } from "../middlewares/jwt";
 import verifyToken from "../middlewares/jwt";
 const ClientRoute = Router()
 ClientRoute.get("/clients", isAdminToken, getAllClient);
-ClientRoute.post("/client", isAdminToken , createClient);
+ClientRoute.post("/client", createClient);
 ClientRoute.get("/client/:id", verifyToken, getClientyId);
 ClientRoute.delete("/client/:id", isAdminToken , deleteCient);
-ClientRoute.put("/client/:id",isAdminToken , updateClient);
+ClientRoute.put("/client/:id", verifyToken, updateClient);
 
 export default ClientRoute
