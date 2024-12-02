@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { Pool } from 'pg'
 export default async function RunnMigrations( db : Pool) {
-    const currentDir = process.cwd()
+    const currentDir = __dirname
     console.log('starting running migrations at : ' + Date.now())
     fs.readdir(path.join(currentDir + '/Sql'), async(err, files) => {
             if (err) {

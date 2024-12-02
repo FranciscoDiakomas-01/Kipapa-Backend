@@ -19,6 +19,7 @@ async function StartServer() {
     const server: Application = express();
     const port = process.env.PORT;
     const db = ConnectionDb;
+    console.log(__dirname)
     await RunnMigrations(db)
     try {
         await CreateDefaultAdmin(db);
@@ -28,7 +29,7 @@ async function StartServer() {
     //glogal middleware
     server.use(cors());
     server.use(express.json());
-    server.use(express.static(path.join(process.cwd() + '/dist/uploads/')))
+    server.use(express.static(path.join(__dirname + '/dist/uploads/')))
 
     //routes
     server.use(DepartmentRoute)

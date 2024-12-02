@@ -5,14 +5,14 @@ dotenv.config()
 
 export default async function deleteUpLoadedFile( URL : string ){
 
-    fs.readdir(path.join(process.cwd() + "/dist/uploads/"), (err, files) => {
+    fs.readdir(path.join(__dirname + "/dist/uploads/"), (err, files) => {
       if (err) {
         process.exit(1);
       } else {
         files.forEach((file) => {
           const fileURL = process.env.SERVER_PATH + file;
           if (fileURL == URL) {
-            fs.unlinkSync(path.join(process.cwd() + "/dist/uploads/" + file));
+            fs.unlinkSync(path.join(__dirname + "/dist/uploads/" + file));
             return;
           }
         });
