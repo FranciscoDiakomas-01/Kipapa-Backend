@@ -1,5 +1,4 @@
 dist/
 node_modules/
 .env
-vercel.json
 .tsup.config.js
