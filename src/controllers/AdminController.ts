@@ -38,7 +38,7 @@ export async function UpdateAdmin(req: Request, res: Response) {
         console.log(oldPassword)
       const newPassWord = CryptoJS.AES.encrypt(admin.password,String(process.env.ENC_PASS)).toString();
       if(oldPassword == admin.olPassWord){
-        db.query("UPDATE delivery SET password = $1 , name = $2 , email = $3 , adress = $4 , updated_at = now() WHERE id = 1;",
+        await db.query("UPDATE delivery SET password = $1 , name = $2 , email = $3 , adress = $4 , updated_at = now() WHERE id = 1;",
             [newPassWord, admin.name, admin.email, JSON.stringify(admin.adress)]
           );
           res.status(200).json({
@@ -60,7 +60,7 @@ export async function UpdateAdmin(req: Request, res: Response) {
 }
 
 export async function getAdminData(req: Request, res: Response) {
-    db.query("SELECT id ,  name , email , adress , to_char(created_at , 'MM/DD/YYYY - HH:mi') as created_at , to_char(updated_at , 'MM/DD/YYYY - HH:mi') as updated_at   FROM delivery;", (err, result) => {
+    await db.query("SELECT id ,  name , email , adress , to_char(created_at , 'MM/DD/YYYY - HH:mi') as created_at , to_char(updated_at , 'MM/DD/YYYY - HH:mi') as updated_at   FROM delivery;", (err, result) => {
         if (err) {
             res.status(400).json({
                 error : err.message
@@ -74,7 +74,7 @@ export async function getAdminData(req: Request, res: Response) {
 }
 
 export async function DashBoard(req: Request, res: Response) {
-db.query(
+await db.query(
     `
     SELECT count(*) as total from product
               UNION ALL

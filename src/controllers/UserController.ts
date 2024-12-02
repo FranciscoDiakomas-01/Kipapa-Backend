@@ -13,7 +13,7 @@ export async function getAllUser(req: Request, res: Response) {
   const offset: number = (page - 1) * limit;
   const { rows } = await db.query("SELECT count(*) as total FROM employeds;");
   const laspage = Math.ceil(Number(rows[0]?.total) / limit);
-  db.query(
+  await db.query(
     "SELECT employeds.id ,employeds.name ,  employeds.lastname, employeds.email , employeds.adress , to_char(employeds.created_at , 'DD/MM/YYYY') as created_at,to_char(employeds.updated_at , 'DD/MM/YYYY') as updated_at , categoryEmployed.title as category , categoryEmployed.salary FROM employeds JOIN categoryEmployed ON employeds.category_id = categoryEmployed.id WHERE employeds.category_id = categoryEmployed.id ORDER BY id DESC LIMIT $1 OFFSET $2 ",
     [limit, offset],
     (err, result) => {
@@ -35,7 +35,7 @@ export async function getAllUser(req: Request, res: Response) {
 
 export async function getAllDisponilbeUserByCategory(req: Request, res: Response) {
   const categoryId = req.params.categoryId
-  db.query("SELECT id , concat(name , ' ' , lastname) as name, email FROM employeds WHERE category_id = $1", [categoryId], (err, result) => {
+  await db.query("SELECT id , concat(name , ' ' , lastname) as name, email FROM employeds WHERE category_id = $1", [categoryId], (err, result) => {
     if (err) {
       console.log(err);
     } else {
@@ -57,7 +57,7 @@ export async function filterUser(req: Request, res: Response) {
     id = 'id'
   }
   if (id && filter?.toLocaleLowerCase() == filters.id) {
-      return db.query(
+      return await db.query(
         "SELECT employeds.id , employeds.name ,  employeds.lastname , employeds.email , employeds.adress , to_char(employeds.created_at , 'DD/MM/YYYY') as created_at,to_char(employeds.updated_at , 'DD/MM/YYYY') as updated_at , categoryEmployed.title as category , categoryEmployed.salary FROM employeds JOIN categoryEmployed ON employeds.category_id = categoryEmployed.id WHERE employeds.category_id = categoryEmployed.id AND  employeds.id = $1 LIMIT 1",
         [id],
         (err, result) => {
@@ -72,7 +72,7 @@ export async function filterUser(req: Request, res: Response) {
   else{
     const { rows } = await db.query("SELECT count(*) as total FROM employeds;");
     const laspage = Math.floor(Number(rows[0]?.total) / limit);
-    db.query(
+    await db.query(
       "SELECT employeds.id ,  employeds.name ,  employeds.lastname , employeds.email , employeds.adress , to_char(employeds.created_at , 'DD/MM/YYYY') as created_at,to_char(employeds.updated_at , 'DD/MM/YYYY') as updated_at , categoryEmployed.title as category , categoryEmployed.salary FROM employeds JOIN categoryEmployed ON employeds.category_id = categoryEmployed.id WHERE employeds.category_id = $1 ORDER BY id DESC LIMIT $2 OFFSET $3 ",
       [id, limit, offset],
       (err, result) => {

@@ -8,7 +8,7 @@ export async function getPayForms(req: Request, res: Response) {
   
   const id = Number(req.query.id);
   if (id) {
-    db.query(
+    await db.query(
       "SELECT id , title ,  to_char(created_at , 'DD/MM/YYYY') as created_at,to_char(updated_at , 'DD/MM/YYYY') as updated_at   FROM payforms WHERE id = $1;",
       [id],
       async (err, result) => {
@@ -20,7 +20,7 @@ export async function getPayForms(req: Request, res: Response) {
     );
     return;
   }
-  db.query(
+  await db.query(
     "SELECT id , title ,  to_char(created_at , 'DD/MM/YYYY') as created_at,to_char(updated_at , 'DD/MM/YYYY') as updated_at  FROM payforms;",
     async (err, result) => {
       res.status(200).json({
@@ -41,7 +41,7 @@ export async function CreatePayForm(req: Request, res: Response) {
     return;
   }
   
-  db.query(
+  await db.query(
     "INSERT INTO payforms(title) VALUES($1)",
     [title?.toUpperCase()],
     async (err, result) => {
@@ -70,7 +70,7 @@ export async function UpdatePayForm(req: Request, res: Response) {
     return;
   }
   
-  db.query(
+  await db.query(
     "UPDATE payforms SET title = $1 , updated_at = now() WHERE id =$2",
     [title?.toUpperCase(), id],
     async (err, result) => {
@@ -92,7 +92,7 @@ export async function DeletePayForm(req: Request, res: Response) {
   const id = Number(req.params.id);
   
   if (!isNaN(id)) {
-    db.query(
+    await db.query(
       "DELETE FROM payforms WHERE id = $1;",
       [id],
       async (err, result) => {

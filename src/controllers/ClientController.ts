@@ -14,7 +14,7 @@ export async function getAllClient(req: Request, res: Response) {
   const offset: number = (page - 1) * limit;
   const { rows } = await db.query("SELECT count(*) as total FROM clients;");
   const laspage = Math.ceil(Number(rows[0]?.total) / limit);
-  db.query(
+  await db.query(
     "SELECT clients.id , clients.name , clients.lastname, clients.email , to_char(clients.created_at , 'DD/MM/YYYY') as created_at,to_char(clients.updated_at , 'DD/MM/YYYY') as updated_at , clients.adress FROM clients ORDER BY clients.id DESC LIMIT $1 OFFSET $2 ",
     [limit, offset],
     (err, result) => {
@@ -36,7 +36,7 @@ export async function getAllClient(req: Request, res: Response) {
 export async function getClientyId(req: Request, res: Response) {
   const id = !isNaN(Number(req.params.id)) ? req.params.id : false;
   if (id) {
-    return db.query(
+    return await db.query(
       "SELECT clients.id , clients.name ,   clients.lastname, clients.email , to_char(clients.created_at , 'DD/MM/YYYY') as created_at,to_char(clients.updated_at , 'DD/MM/YYYY') as updated_at , clients.adress FROM clients WHERE id = $1 LIMIT 1;",
       [id],
       (err, result) => {
@@ -75,7 +75,7 @@ export async function createClient(req: Request, res: Response) {
     });
     return;
   }
-  db.query("INSERT INTO clients(name , lastname , email , password , adress ) VALUES($1 , $2 , $3 , $4 , $5) RETURNING id;",
+  await db.query("INSERT INTO clients(name , lastname , email , password , adress ) VALUES($1 , $2 , $3 , $4 , $5) RETURNING id;",
       [client.name, client.lastname, client.email, client.password , JSON.stringify(client.adress)],
       async (err, result) => {
         if (err) {

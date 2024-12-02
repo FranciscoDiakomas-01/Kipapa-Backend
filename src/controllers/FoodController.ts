@@ -18,7 +18,7 @@ export async function getProductByCategory(req: Request, res: Response) {
     
   const { rowCount } = await db.query("SELECT id from product WHERE category_id = $1 ", [id]);
   const latPage = Math.ceil(Number(rowCount) / limit);
-    db.query(
+    await db.query(
       "SELECT product.id , product.name , product.description , product.current_price , product.old_price , to_char(product.created_at , 'DD/MM/YYYY') as created_at , to_char(product.updated_at , 'DD/MM/YYYY') as updated_at , product.img_url , productCategory.title FROM product JOIN productCategory ON product.category_id = productCategory.id WHERE  product.category_id = productCategory.id and product.category_id = $1 LIMIT $2 OFFSET $3;",
       [id , limit, offset],
       async (err, result) => {
@@ -50,7 +50,7 @@ export async function getProduct(req: Request, res: Response) {
     const { rowCount } = await db.query("SELECT id from product");
     const latPage = Math.ceil(Number(rowCount) / limit)
     if (id) {
-        db.query(
+        await db.query(
           "SELECT product.id , product.name , product.description , product.current_price , product.old_price , to_char(product.created_at , 'DD/MM/YYYY') as created_at , to_char(product.updated_at , 'DD/MM/YYYY') as updated_at , product.img_url , productCategory.title , productCategory.id as categoryId FROM product JOIN productCategory ON product.category_id = productCategory.id WHERE  product.category_id = productCategory.id and product.id = $1 LIMIT 1;",
           [id],
           async (err, result) => {
@@ -66,7 +66,7 @@ export async function getProduct(req: Request, res: Response) {
         );
         return;
     } else {
-            db.query(
+            await db.query(
               "SELECT product.id , product.name , product.description , product.current_price , product.old_price , to_char(product.created_at , 'DD/MM/YYYY') as created_at , to_char(product.updated_at , 'DD/MM/YYYY') as updated_at , product.img_url , productCategory.title FROM product JOIN productCategory ON product.category_id = productCategory.id WHERE  product.category_id = productCategory.id ORDER BY id DESC LIMIT $1 OFFSET $2;",
               [limit, offset],
               async (err, result) => {
@@ -110,7 +110,7 @@ export async function CreateProduct(req: Request, res: Response) {
         return
     } else {
 
-        db.query("INSERT INTO product(name ,description , img_url , current_price , old_price , category_id ) VALUES ($1 , $2 , $3 , $4 , $5 , $6);", [Food.name , Food.description , Food.img_url , Food.current_price , Food.old_price , Food.category_id]
+        await db.query("INSERT INTO product(name ,description , img_url , current_price , old_price , category_id ) VALUES ($1 , $2 , $3 , $4 , $5 , $6);", [Food.name , Food.description , Food.img_url , Food.current_price , Food.old_price , Food.category_id]
             , (err, result) => {
               if (err) {
                     fs.unlinkSync(filePath);
@@ -198,7 +198,7 @@ export async function DeleteProduct(req: Request, res: Response) {
     //pegar o caminho do arquivo para eliminar
     const { rows } = await db.query("SELECT img_url FROM product WHERE id = $1 LIMIT 1;", [id]);
     await deleteUpLoadedFile(String(rows[0]?.img_url));
-    db.query("DELETE FROM product WHERE id = $1;",[id],async (err, result) => {
+    await db.query("DELETE FROM product WHERE id = $1;",[id],async (err, result) => {
         res.status(201).json({
           data: result.rowCount != 0 ? "deleted" : "not found",
         });

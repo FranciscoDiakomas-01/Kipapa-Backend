@@ -9,7 +9,7 @@ export async function AdminLogin(req : Request , res : Response) {
     try {
         if (validator.isEmail(req.body?.email) && req.body?.password?.length >= 8) {
             
-            db.query('SELECT email , password , id from delivery WHERE id = 1 LIMIT 1;', (err, result) => {
+            await db.query('SELECT email , password , id from delivery WHERE id = 1 LIMIT 1;', (err, result) => {
                 if (err) {
                     console.log(err)
                     return
@@ -52,7 +52,7 @@ export async function AdminLogin(req : Request , res : Response) {
 export async function ClientLogin(req: Request, res: Response) {
   try {
     if (validator.isEmail(req.body?.email) && req.body?.password?.length >= 8) {
-      db.query(
+      await db.query(
         "SELECT email , password , id from clients WHERE email = $1 LIMIT 1;", [req.body.email],
         (err, result) => {
           if (err) {

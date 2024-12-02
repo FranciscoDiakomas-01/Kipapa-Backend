@@ -9,7 +9,7 @@ export async function getUserDepartament(req : Request , res : Response) {
     
     const id = Number(req.query.id);
     if (id) {
-        db.query("SELECT * FROM categoryEmployed WHERE id = $1;" , [id], async(err, result) => {
+        await db.query("SELECT * FROM categoryEmployed WHERE id = $1;" , [id], async(err, result) => {
             res.status(200).json({
                 data: result.rows,
             });
@@ -33,7 +33,7 @@ export async function CreateUserDepartament(req: Request, res: Response) {
         title: req.body.title
     }
     if (departament.salary > 1000 && departament.title.length > 2 ) {
-        db.query("INSERT INTO categoryEmployed(salary ,title) VALUES($1 , $2)", [departament.salary, departament.title], async(err, result) => {
+        await db.query("INSERT INTO categoryEmployed(salary ,title) VALUES($1 , $2)", [departament.salary, departament.title], async(err, result) => {
             if (err) {
                 res.status(400).json({
                     error : 'alreary exist',
@@ -63,7 +63,7 @@ export async function UpdateUserDepartament(req : Request , res : Response) {
         title: req.body.title
     }
     if (departament.salary > 1000 && departament.title.length > 2 ) {
-        db.query("UPDATE categoryEmployed SET salary = $1 ,title = $2 , updated_at = now() WHERE id = $3",[departament.salary, departament.title, id], async(err, result) => {
+        await db.query("UPDATE categoryEmployed SET salary = $1 ,title = $2 , updated_at = now() WHERE id = $3",[departament.salary, departament.title, id], async(err, result) => {
             if (err) {
                 res.status(400).json({
                     error : 'alreary exist',
@@ -88,7 +88,7 @@ export async function DeleteuserDepartment(req : Request , res : Response) {
     const id = Number(req.params.id);
     ;
     if (!isNaN(id)) {
-        db.query("DELETE FROM categoryEmployed WHERE id = $1;",[id], async(err, result) => {
+        await db.query("DELETE FROM categoryEmployed WHERE id = $1;",[id], async(err, result) => {
             res.status(201).json({
                     data:  result.rowCount != 0 ? 'deleted' : 'not found',
             });
