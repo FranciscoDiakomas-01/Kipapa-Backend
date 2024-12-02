@@ -2,22 +2,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "package.json",
-      "use": "@vercel/node",
-      "config": {
-        "runtime": "nodejs23.x",
-        "installCommand": "npm ci"
-      }
+      "src": "src/server.ts",
+      "use": "@vercel/node"
     }
   ],
   "routes": [
     {
-      "src": "/kipapa/(.*)",
-      "dest": "/kipapa/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/.next/$1" 
+      "src": "(.*)",
+      "dest": "/src/server.ts"
     }
   ]
 }
