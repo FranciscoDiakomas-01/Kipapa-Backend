@@ -28,7 +28,7 @@ async function StartServer() {
     //glogal middleware
     server.use(cors());
     server.use(express.json());
-    server.use(express.static(path.join(process.cwd() + '/src/uploads/')))
+    server.use(express.static(path.join(process.cwd() + '/dist/uploads/')))
 
     //routes
     server.use(DepartmentRoute)
