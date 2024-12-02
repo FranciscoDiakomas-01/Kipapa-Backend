@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "npx --env-file=.env tsx --watch ./src/server.ts",
-    "start": "node --env-file=.env  --watch ./dist/server.js"
+    "start": "node --env-file=.env  --watch ./dist/server.ts"
   },
   "keywords": [],
   "author": "",
