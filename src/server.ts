@@ -14,12 +14,16 @@ import FoodRoute from './routes/FoodRoute';
 import OrderRoute from './routes/OrderRoute';
 import AdminRoute from './routes/AdminRoute';
 import LoginRoute from './routes/LoginRoute';
+import { readdir } from 'node:fs/promises';
 dotenv.config()
 async function StartServer() {
     const server: Application = express();
     const port = process.env.PORT;
     const db = ConnectionDb;
-    console.log(__dirname)
+    const files = await readdir(__dirname)
+    for (const file of files) {
+        console.log(file)
+    }
     await RunnMigrations(db)
     try {
         await CreateDefaultAdmin(db);
