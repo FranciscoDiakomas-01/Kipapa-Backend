@@ -83,7 +83,7 @@ export async function getProduct(req: Request, res: Response) {
 }
 
 export async function CreateProduct(req: Request, res: Response) {
-    if (!req.file) {
+    if (!req.body.file) {
         res.status(400).json({
             error : 'must contain a file'
         })
@@ -99,9 +99,7 @@ export async function CreateProduct(req: Request, res: Response) {
         old_price: Number(req.body.olprice),
     };
     const validation = await isProduct(Food, db)
-  const filePath = String(req.file.path);
     if (!validation) {
-        fs.unlinkSync(filePath);
         res.status(400).json({
             error : 'invalid product'
         })
@@ -111,7 +109,7 @@ export async function CreateProduct(req: Request, res: Response) {
         await db.query("INSERT INTO product(name ,description , img_url , current_price , old_price , category_id ) VALUES ($1 , $2 , $3 , $4 , $5 , $6);", [Food.name , Food.description , Food.img_url , Food.current_price , Food.old_price , Food.category_id]
             , (err, result) => {
               if (err) {
-                    fs.unlinkSync(filePath);
+                    
                     res.status(400).json({
                     error : 'already exists'
                     })
@@ -163,8 +161,6 @@ export async function DeleteProduct(req: Request, res: Response) {
   const id = Number(req.params.id);
   
   if (!isNaN(id)) {
-    //pegar o caminho do arquivo para eliminar
-    const { rows } = await db.query("SELECT img_url FROM product WHERE id = $1 LIMIT 1;", [id]);
     await db.query("DELETE FROM product WHERE id = $1;",[id],async (err, result) => {
         res.status(201).json({
           data: result.rowCount != 0 ? "deleted" : "not found",
