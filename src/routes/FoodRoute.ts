@@ -1,12 +1,10 @@
 import { Router } from "express";
-import upload from "../middlewares/upload";
-import { getProduct , DeleteProduct , CreateProduct , UpdateProductBody ,UpdateProductFile , getProductByCategory} from "../controllers/FoodController";
+import { getProduct , DeleteProduct , CreateProduct , UpdateProductBody , getProductByCategory} from "../controllers/FoodController";
 const FoodRoute = Router()
 import { isAdminToken } from "../middlewares/jwt";
 FoodRoute.get('/product', getProduct)
 FoodRoute.get("/productbyCategory/:id", getProductByCategory);
-FoodRoute.post("/product",isAdminToken , upload.single("file"), CreateProduct);
+FoodRoute.post("/product",isAdminToken , CreateProduct);
 FoodRoute.put("/product/:id", isAdminToken ,UpdateProductBody);
-FoodRoute.put("/productfile/:id", isAdminToken , upload.single("file"), UpdateProductFile);
 FoodRoute.delete("/product/:id", isAdminToken ,DeleteProduct);
 export default FoodRoute

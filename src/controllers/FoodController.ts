@@ -5,11 +5,9 @@ import fs  from "node:fs";
 dotenv.config()
 import { isProduct, isProductToUpdate } from "../services/productValidation";
 import { IProduct } from "../types/types";
-import deleteUpLoadedFile from "../services/deleteUploadedFile";
 const db = ConnectionDB;
 
 export async function getProductByCategory(req: Request, res: Response) {
-  
   const id = Number(req.params?.id);
   const page = Number(req.query.page) || 1;
   const limit = Number(req.query.limit) || 10;
@@ -97,7 +95,7 @@ export async function CreateProduct(req: Request, res: Response) {
         current_price: Number(req.body.price),
         name: String(req.body.name),
         description: req.body.description,
-        img_url: String(process.env.SERVER_PATH + req.file?.filename),
+        img_url: req.body.file,
         old_price: Number(req.body.olprice),
     };
     const validation = await isProduct(Food, db)
@@ -161,43 +159,12 @@ export async function UpdateProductBody(req: Request, res: Response) {
     }
 }
 
-export async function UpdateProductFile(req: Request, res: Response) {
-    const id = Number(req.params.id);
-  
-  if (req.file) {
-    const { rows } = await db.query("SELECT img_url FROM product WHERE id = $1 LIMIT 1;", [id]);
-    const fileTodelete = String(rows[0]?.img_url);
-    const image_url = String(String(process.env.SERVER_PATH) + req.file?.filename)
-    const { rowCount } = await db.query("UPDATE product SET img_url = $1 , updated_at = now() WHERE id = $2", [image_url, id]);
-    if (rowCount == 1) {
-      //deletar o arquivo passado caso Ele exista
-      await deleteUpLoadedFile(String(fileTodelete));
-      res.status(200).json({
-        data: "updated"
-      });
-      return 
-    } else {
-      fs.unlinkSync(req.file.path)
-      res.status(404).json({
-        data: "not found",
-      });
-      return ;
-    }
-  } else {
-    res.status(400).json({
-      error : 'invalid file'
-    })
-  }
-  
-}
-
 export async function DeleteProduct(req: Request, res: Response) {
   const id = Number(req.params.id);
   
   if (!isNaN(id)) {
     //pegar o caminho do arquivo para eliminar
     const { rows } = await db.query("SELECT img_url FROM product WHERE id = $1 LIMIT 1;", [id]);
-    await deleteUpLoadedFile(String(rows[0]?.img_url));
     await db.query("DELETE FROM product WHERE id = $1;",[id],async (err, result) => {
         res.status(201).json({
           data: result.rowCount != 0 ? "deleted" : "not found",

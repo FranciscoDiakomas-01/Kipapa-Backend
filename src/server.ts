@@ -1,6 +1,5 @@
 import express , {Application} from 'express'
 import cors from 'cors'
-import path from "node:path";
 import dotenv from 'dotenv'
 import ConnectionDb from './database/dbConnection'
 import RunnMigrations from './database/runnMigration'
@@ -28,8 +27,6 @@ async function StartServer() {
     //glogal middleware
     server.use(cors());
     server.use(express.json());
-    server.use(express.static(path.join(process.cwd() + "/uploads")));
-
     //routes
     server.use(DepartmentRoute)
     server.use(ClientRoute);
