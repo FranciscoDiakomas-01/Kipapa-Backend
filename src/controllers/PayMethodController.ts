@@ -9,7 +9,7 @@ export async function getPayForms(req: Request, res: Response) {
   const id = Number(req.query.id);
   if (id) {
     await db.query(
-      "SELECT id , title ,  to_char(created_at , 'DD/MM/YYYY') as created_at,to_char(updated_at , 'DD/MM/YYYY') as updated_at   FROM payforms WHERE id = $1;",
+      "SELECT id , title FROM payforms WHERE id = $1;",
       [id],
       async (err, result) => {
         res.status(200).json({
@@ -21,7 +21,7 @@ export async function getPayForms(req: Request, res: Response) {
     return;
   }
   await db.query(
-    "SELECT id , title ,  to_char(created_at , 'DD/MM/YYYY') as created_at,to_char(updated_at , 'DD/MM/YYYY') as updated_at  FROM payforms;",
+    "SELECT id , title  FROM payforms;",
     async (err, result) => {
       res.status(200).json({
         data: result.rows,
@@ -71,7 +71,7 @@ export async function UpdatePayForm(req: Request, res: Response) {
   }
   
   await db.query(
-    "UPDATE payforms SET title = $1 , updated_at = now() WHERE id =$2",
+    "UPDATE payforms SET title = $1 WHERE id =$2",
     [title?.toUpperCase(), id],
     async (err, result) => {
       if (err) {

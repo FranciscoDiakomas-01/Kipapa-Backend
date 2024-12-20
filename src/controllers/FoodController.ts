@@ -17,7 +17,7 @@ export async function getProductByCategory(req: Request, res: Response) {
   const { rowCount } = await db.query("SELECT id from product WHERE category_id = $1 ", [id]);
   const latPage = Math.ceil(Number(rowCount) / limit);
     await db.query(
-      "SELECT product.id , product.name , product.description , product.current_price , product.old_price , to_char(product.created_at , 'DD/MM/YYYY') as created_at , to_char(product.updated_at , 'DD/MM/YYYY') as updated_at , product.img_url , productCategory.title FROM product JOIN productCategory ON product.category_id = productCategory.id WHERE  product.category_id = productCategory.id and product.category_id = $1 LIMIT $2 OFFSET $3;",
+      "SELECT product.id , product.name , product.description , product.current_price , product.old_price , product.img_url , productCategory.title FROM product JOIN productCategory ON product.category_id = productCategory.id WHERE  product.category_id = productCategory.id and product.category_id = $1 LIMIT $2 OFFSET $3;",
       [id , limit, offset],
       async (err, result) => {
         res.status(200).json({
@@ -49,7 +49,7 @@ export async function getProduct(req: Request, res: Response) {
     const latPage = Math.ceil(Number(rowCount) / limit)
     if (id) {
         await db.query(
-          "SELECT product.id , product.name , product.description , product.current_price , product.old_price , to_char(product.created_at , 'DD/MM/YYYY') as created_at , to_char(product.updated_at , 'DD/MM/YYYY') as updated_at , product.img_url , productCategory.title , productCategory.id as categoryId FROM product JOIN productCategory ON product.category_id = productCategory.id WHERE  product.category_id = productCategory.id and product.id = $1 LIMIT 1;",
+          "SELECT product.id , product.name , product.description , product.current_price , product.old_price , product.img_url , productCategory.title , productCategory.id as categoryId FROM product JOIN productCategory ON product.category_id = productCategory.id WHERE  product.category_id = productCategory.id and product.id = $1 LIMIT 1;",
           [id],
           async (err, result) => {
             if (err) {
@@ -65,7 +65,7 @@ export async function getProduct(req: Request, res: Response) {
         return;
     } else {
             await db.query(
-              "SELECT product.id , product.name , product.description , product.current_price , product.old_price , to_char(product.created_at , 'DD/MM/YYYY') as created_at , to_char(product.updated_at , 'DD/MM/YYYY') as updated_at , product.img_url , productCategory.title FROM product JOIN productCategory ON product.category_id = productCategory.id WHERE  product.category_id = productCategory.id ORDER BY id DESC LIMIT $1 OFFSET $2;",
+              "SELECT product.id , product.name , product.description , product.current_price , product.old_price , product.img_url , productCategory.title FROM product JOIN productCategory ON product.category_id = productCategory.id WHERE  product.category_id = productCategory.id ORDER BY id DESC LIMIT $1 OFFSET $2;",
               [limit, offset],
               async (err, result) => {
                 res.status(200).json({
@@ -137,7 +137,7 @@ export async function UpdateProductBody(req: Request, res: Response) {
     };
     const validation = await isProductToUpdate(Food, db)
     if (validation) {
-        await db.query("UPDATE product SET name = $1, description = $2 , current_price = $3 , old_price = $4, category_id = $5 ,  updated_at = now() WHERE id = $6", [Food.name, Food.description, Food.current_price, Food.old_price, Food.category_id, id], (err, result) => {
+        await db.query("UPDATE product SET name = $1, description = $2 , current_price = $3  WHERE id = $6", [Food.name, Food.description, Food.current_price, Food.old_price, Food.category_id, id], (err, result) => {
             if (err) {
                 res.status(400).json({
                     error : 'already exist'

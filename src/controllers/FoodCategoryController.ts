@@ -82,7 +82,7 @@ export async function UpdateCategoryFoodBody(req: Request, res: Response) {
     decription: req.body.desription,
   };
   if (FoodCategory.title?.length >= 5 && FoodCategory.title?.length < 20) {
-    await db.query("UPDATE productcategory SET description = $1 ,title = $2 , updated_at = now() WHERE id = $3", [FoodCategory.decription, FoodCategory.title, id], (err, result) => {
+    await db.query("UPDATE productcategory SET description = $1 ,title = $2  WHERE id = $3", [FoodCategory.decription, FoodCategory.title, id], (err, result) => {
       if (err) {
         res.status(400).json({
         error : 'already exists' + err.message
