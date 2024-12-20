@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS product(
     img_url text not null,
     current_price int not null,
     old_price int default 0,
-    category_id int not null references productCategory(id) on delete cascade,
+    category_id int not null references productCategory(id) on delete cascade
 );
 
 CREATE TABLE IF NOT EXISTS orders(

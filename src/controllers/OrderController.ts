@@ -217,37 +217,3 @@ export async function deleteOrder(req: Request, res: Response) {
     return ;
   });
 }
-
-
-export async function AddDelivery(req: Request, res: Response) {
-  const orderId = Number(req.params.id);
-  const userId = Number(req.params.userId);
-  //getUserById or Delivery
-  const { rowCount, rows } = await db.query(
-    "SELECT concat(name , ' ' , lastname) as name , email FROM employeds where id=$1 LIMIT 1",
-    [userId]
-  );
-  if (isNaN(orderId) || isNaN(userId)) {
-    res.status(400).json({
-      error: "invalid id",
-    });
-    return;
-  }
-  if (rowCount != 0) {
-    await db.query(
-      "UPDATE orders SET delivery = $1 WHERE id = $2",
-      [JSON.stringify(rows[0]), orderId],
-      (err, result) => {
-        res.status(200).json({
-          data: result.rowCount != 0 ? "updated" : "not found",
-        });
-        return;
-      }
-    );
-  } else {
-    res.status(400).json({
-      error: "invalid user",
-    });
-    return;
-  }
-}
