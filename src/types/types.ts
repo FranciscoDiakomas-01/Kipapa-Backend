@@ -4,7 +4,6 @@ export interface IAdmin {
   name: string;
   email: string;
   password: string;
-  adress: IAdress;
   olPassWord : string
 }
 export  interface IAdress {

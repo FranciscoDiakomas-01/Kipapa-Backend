@@ -7,7 +7,7 @@ import { IAdmin } from "../types/types";
 import { isAvaliableAdmin } from "../services/validationAdmin";
 const db = ConnectionDB
 export async function UpdateAdmin(req: Request, res: Response) {
-    if (req.body?.password?.length < 8 &&req.body?.password?.oldpassword &&req.body?.password?.oldpassword?.length < 8) {
+    if (req.body?.password?.length < 8 && req.body?.password?.oldpassword &&req.body?.password?.oldpassword?.length < 8) {
       res.status(400).json({
         error: "invalid pasword",
       });
@@ -15,11 +15,6 @@ export async function UpdateAdmin(req: Request, res: Response) {
     }
 
     const admin: IAdmin = {
-        adress: {
-            cep: req.body.cep,
-            city: req.body.city,
-            qoute : req.body.qoute
-        },
         email: req.body.email,
         name: req.body.name,
         olPassWord: req.body.oldpassword,
@@ -38,8 +33,8 @@ export async function UpdateAdmin(req: Request, res: Response) {
         console.log(oldPassword)
       const newPassWord = CryptoJS.AES.encrypt(admin.password,String(process.env.ENC_PASS)).toString();
       if(oldPassword == admin.olPassWord){
-        await db.query("UPDATE delivery SET password = $1 , name = $2 , email = $3 , adress = $4 WHERE id = 1;",
-            [newPassWord, admin.name, admin.email, JSON.stringify(admin.adress)]
+        await db.query("UPDATE delivery SET password = $1 , name = $2 , email = $3 WHERE id = 1;",
+            [newPassWord, admin.name, admin.email]
           );
           res.status(200).json({
             msg: "updated",
