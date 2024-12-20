@@ -5,11 +5,6 @@ dotenv.config();
 import { Pool } from "pg";
 export default async function CreateDefaultAdmin(db: Pool) {
   const Admin  = {
-    adress: {
-      city: "Luanda",
-      cep: 111111,
-      qoute: "Cacuaco",
-    },
     email: String(process.env.DEFAULT_EMAIL),
     name: "Kipapa",
     password: CryptoJS.AES.encrypt(
@@ -30,8 +25,8 @@ export default async function CreateDefaultAdmin(db: Pool) {
     await db.query("delete from productCategory;");
     await db.query("delete from orders;");
     await db.query(
-      "insert into delivery(id , name , email , password , adress)  values($1 , $2 , $3 , $4 , $5);",
-      [1, Admin.name, Admin.email, Admin.password, JSON.stringify(Admin.adress)]
+      "insert into delivery(id , name , email , password)  values($1 , $2 , $3 , $4);",
+      [1, Admin.name, Admin.email, Admin.password]
     );
     //detelando todos os dados
     console.log("Admin created!");

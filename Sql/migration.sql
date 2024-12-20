@@ -4,38 +4,12 @@ CREATE TABLE IF NOT EXISTS delivery(
     id serial not null primary key,
     name varchar(40) not null,
     email varchar(40) not null,
-    password text not null,
-    adress jsonb,
-    created_at timestamp default now(),
-    updated_at timestamp default now()
+    password text not null
 );
 
 CREATE TABLE IF NOT EXISTS payForms(
     id serial not null primary key,
-    title varchar(30) not null unique,
-    created_at timestamp default now(),
-    updated_at timestamp default now()
-);
-
-CREATE TABLE IF NOT EXISTS categoryEmployed(
-    id serial not null primary key,
-    title varchar(30) not null unique,
-    salary int,
-    created_at timestamp default now(),
-    updated_at timestamp default now()
-);
-
-CREATE TABLE IF NOT EXISTS employeds(
-    id serial not null primary key,
-    name varchar(30) not null,
-    lastname varchar(30) not null,
-    email varchar(30) not null unique,
-    isOpen int default 1,
-    password text not null,
-    adress jsonb,
-    category_id int not null references categoryEmployed(id) on delete cascade,
-    created_at timestamp default now(),
-    updated_at timestamp default now()
+    title varchar(30) not null unique
 );
 
 CREATE TABLE IF NOT EXISTS clients(
@@ -53,9 +27,7 @@ CREATE TABLE IF NOT EXISTS productCategory(
     id serial not null primary key,
     title varchar(30) not null unique,
     description text,
-    img_url text not null,
-    created_at timestamp default now(),
-    updated_at timestamp default now()
+    img_url text not null
 );
 
 CREATE TABLE IF NOT EXISTS product(
@@ -66,8 +38,6 @@ CREATE TABLE IF NOT EXISTS product(
     current_price int not null,
     old_price int default 0,
     category_id int not null references productCategory(id) on delete cascade,
-    created_at timestamp default now(),
-    updated_at timestamp default now()
 );
 
 CREATE TABLE IF NOT EXISTS orders(

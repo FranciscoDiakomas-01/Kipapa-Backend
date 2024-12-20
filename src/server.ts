@@ -4,8 +4,6 @@ import dotenv from 'dotenv'
 import ConnectionDb from './database/dbConnection'
 import RunnMigrations from './database/runnMigration'
 import CreateDefaultAdmin from './database/createDefaultAdmin'
-import DepartmentRoute from './routes/UserDepartmentRoute'
-import UserRoute from './routes/UserRoute'
 import ClientRoute from './routes/ClientRoute'
 import FoodCategoryRoute from './routes/CategoryFoodRoute'
 import PayFormRoute from './routes/PayMethodRouter';
@@ -28,9 +26,7 @@ async function StartServer() {
     server.use(cors());
     server.use(express.json());
     //routes
-    server.use(DepartmentRoute)
     server.use(ClientRoute);
-    server.use(UserRoute)
     server.use(FoodCategoryRoute);
     server.use(PayFormRoute);
     server.use(FoodRoute);
