@@ -13,7 +13,7 @@ export async function getAllCategoryProduct(req: Request, res: Response) {
     const latPage = Math.ceil(Number(rowCount) / limit);
     if (id) {
         await db.query(
-          "SELECT id , title , description, to_char(created_at , 'DD/MM/YYYY') as created_at , to_char(updated_at , 'DD/MM/YYYY') as updated_at , img_url FROM productcategory WHERE id = $1;",
+          "SELECT id , title , description, img_url FROM productcategory WHERE id = $1;",
           [id],
           async (err, result) => {
             res.status(200).json({
@@ -26,7 +26,7 @@ export async function getAllCategoryProduct(req: Request, res: Response) {
         return;
     } else {
             await db.query(
-              "SELECT id, title , description , to_char(created_at , 'DD/MM/YYYY') as created_at , to_char(updated_at , 'DD/MM/YYYY') as updated_at , img_url FROM productcategory   ORDER BY id DESC LIMIT $1 OFFSET $2;",
+              "SELECT id, title , description , img_url FROM productcategory   ORDER BY id DESC LIMIT $1 OFFSET $2;",
               [limit, offset],
               async (err, result) => {
                 res.status(200).json({
