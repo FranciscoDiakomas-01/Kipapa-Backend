@@ -24,7 +24,7 @@ export async function isProductToUpdate(product : Omit<IProduct , 'img_url'> , d
     try {
         const { rowCount } = await db.query("SELECT id from productCategory WHERE id = $1 LIMIT 1;", [product?.category_id]);
     if (rowCount != 0) {
-        if (!isNaN(product?.old_price) && product?.current_price > 100 && !isNaN(product?.current_price) && product?.name?.length >= 2 && product?.description?.length > 5) {
+        if (!isNaN(product?.old_price) && !isNaN(product?.current_price) && product?.name?.length >= 2 && product?.description?.length > 5) {
             return true
         } else {
             return  false

@@ -137,18 +137,28 @@ export async function UpdateProductBody(req: Request, res: Response) {
     };
     const validation = await isProductToUpdate(Food, db)
     if (validation) {
-        await db.query("UPDATE product SET name = $1, description = $2 , current_price = $3  WHERE id = $6", [Food.name, Food.description, Food.current_price, Food.old_price, Food.category_id, id], (err, result) => {
+        await db.query(
+          "UPDATE product SET name = $1, description = $2 , current_price = $3  , old_price = $4 WHERE id = $5",
+          [
+            Food.name,
+            Food.description,
+            Food.current_price,
+            Food.old_price,
+            id
+          ],
+          (err, result) => {
             if (err) {
-                res.status(400).json({
-                    error : 'already exist'
-                })
+              res.status(400).json({
+                error: "already exist",
+              });
             } else {
-                res.status(200).json({
-                    data: result.rowCount != 0 ? "updated" : "not found",
-                });
+              res.status(200).json({
+                data: result.rowCount != 0 ? "updated" : "not found",
+              });
             }
-            return ;
-        });
+            return;
+          }
+        );
     } else {
         res.status(400).json({
             error: "invalid body",
