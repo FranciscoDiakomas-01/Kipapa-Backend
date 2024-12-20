@@ -60,7 +60,7 @@ export async function UpdateAdmin(req: Request, res: Response) {
 }
 
 export async function getAdminData(req: Request, res: Response) {
-    await db.query("SELECT id ,  name , email , adress , to_char(created_at , 'MM/DD/YYYY - HH:mi') as created_at , to_char(updated_at , 'MM/DD/YYYY - HH:mi') as updated_at   FROM delivery;", (err, result) => {
+    await db.query("SELECT id ,  name , email ,to_char(created_at , 'MM/DD/YYYY - HH:mi') as created_at , to_char(updated_at , 'MM/DD/YYYY - HH:mi') as updated_at   FROM delivery;", (err, result) => {
         if (err) {
             res.status(400).json({
                 error : err.message
@@ -82,11 +82,7 @@ await db.query(
               UNION ALL
     SELECT count(*) as total from orders
               UNION ALL
-    SELECT count(*) as total from employeds
-              UNION ALL       
-    SELECT count(*) as total from clients
-              UNION ALL
-    SELECT count(*) as total from categoryemployed;
+    SELECT count(*) as total from clients;
   `,
     (err, result) => {
       if (err) {
